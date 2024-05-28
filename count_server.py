@@ -1,5 +1,6 @@
 from gpiozero import Button
 from datetime import datetime, timezone
+import pytz
 import csv
 import json
 from flask import Flask, jsonify, send_file
@@ -14,13 +15,24 @@ button = Button(26)
 # CSV file path
 csv_file_path = 'button_press_log.csv'
 
-# Function to log date and time in GMT
+# Function to log date and time in Central time
 def log_datetime():
-    now = datetime.now(timezone.utc)
-    with open(csv_file_path, 'a', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow([now.isoformat()])
-    print(f'Button pressed at {now.isoformat()}')
+     
+	central = pytz.timezone('America/Chicago')
+    # Get the current time in UTC
+    now_utc = datetime.now(pytz.utc)
+
+    # Convert the current UTC time to Central Time
+    now_central = now_utc.astimezone(central)
+
+    # Format the datetime object to the desired format
+    formatted_now_central = now_central.strftime("%d-%m-%Y - %H%M")
+
+
+with open(csv_file_path, 'a', newline='') as csvfile:
+	csvwriter = csv.writer(csvfile)
+	csvwriter.writerow([formatted_now_central])
+print(f'Button pressed at {formatted_now_central}')
 
 # Attach the function to the button press event
 button.when_pressed = log_datetime

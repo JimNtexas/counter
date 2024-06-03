@@ -1,11 +1,39 @@
 ﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Event Recorder</title>
+    <style>
+        h2 { text-align: center; }
+        #listbox { width: 100%; height: 200px; }
+        button { margin: 10px; }
+    </style>
 </head>
 <body>
+    <h2>Event Recorder</h2>
+    <button onclick="fetchData()">Fetch Data</button>
+    <button onclick="downloadData()">Download Data</button>
+    <ul id="listbox"></ul>
 
+    <script>
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    const listbox = document.getElementById('listbox');
+                    listbox.innerHTML = ''; // Clear the listbox
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item.timestamp;
+                        listbox.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function downloadData() {
+            window.location.href = '/download';
+        }
+    </script>
 </body>
 </html>

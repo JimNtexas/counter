@@ -8,6 +8,7 @@ import threading
 import os
 import logging 
 import paho.mqtt.client as mqtt
+#from flask_socketio import SocketIO, emit
 
 
 app = Flask(__name__)
@@ -52,16 +53,21 @@ def log_datetime(btn_id):
     print("debug - " + str(formatted_now_central))
     
     # Publish data to MQTT topic
-    client.publish(topic, json.dumps({"timestamp": formatted_now_central}))
+    #client.publish(topic, json.dumps({"timestamp": formatted_now_central}))
     
     with open(csv_file_path, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow([str(formatted_now_central)])
-        print(f'Button pressed at {formatted_now_central}')
+        logger.info(f'Button pressed at {formatted_now_central}')
 
 # Attach the functions to the button press events
 p_button.when_pressed = lambda: log_datetime('P')
 m_button.when_pressed = lambda: log_datetime('M')
+
+# def on_message(client, userdata, msg):
+    # logger.info(msg.topic+" "+str(msg.payload))
+    # # Emit message to all connected clients
+    # socketio.emit('update_listbox', {'data': msg.payload.decode()})
 
 
 # ============== routes ===============
@@ -100,9 +106,13 @@ def delete_data():
         app.logger.warning('could not delete csv data')
         return jsonify({"error": "No data found to delete"}), 404
         
-# Initialize MQTT client
-client = mqtt.Client()
-client.connect(broker_address, broker_port)
+# # Initialize MQTT client
+# client = mqtt.Client()
+# #client.on_connect = on_connect
+# client.on_message = on_message
+# client.connect(broker_address, broker_port)
+# # Start the MQTT client in a background thread
+# client.loop_start()
 
 #Function to run Flask app in a separate thread
 def run_server():

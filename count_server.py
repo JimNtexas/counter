@@ -1,5 +1,6 @@
-from gpiozero import Button
+from gpiozero import Button, LED
 from datetime import datetime, timezone
+from time import sleep
 import pytz
 import csv
 import json
@@ -7,24 +8,36 @@ from flask import Flask, jsonify, send_file, redirect,url_for,render_template
 import threading
 import os
 import logging 
-import paho.mqtt.client as mqtt
-#from flask_socketio import SocketIO, emit
-
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("counter_log")
 
-
-
-#setup mqtt
-broker_address="localhost"
-broker_port = 1883
-topic = "button_press"
+def flash_led(times, on_time=0.5, off_time=0.5):
+    """
+    Function to flash an LED a given number of times.
+    
+    Parameters:
+    times (int): Number of times to flash the LED
+    on_time (float): Time in seconds the LED stays on during each flash
+    off_time (float): Time in seconds the LED stays off during each flash
+    """
+    print("flashing")
+    for _ in range(times):
+        led.on()
+        sleep(on_time)
+        led.off()
+        sleep(off_time)
 
 # Set up the buttons on GPIO pinS 26 and 19
 p_button = Button(26,bounce_time = 0.1)  #press after pee
 m_button = Button(19,bounce_time = 0.1)  #press after medication
+
+# Set up the LED on GPIO pin 5
+led = LED(5)
+
+#signal the user that we're about ready to go
+flash_led(5,.2,.2)
 
 
 # CSV file path
@@ -52,22 +65,16 @@ def log_datetime(btn_id):
     
     print("debug - " + str(formatted_now_central))
     
-    # Publish data to MQTT topic
-    #client.publish(topic, json.dumps({"timestamp": formatted_now_central}))
-    
     with open(csv_file_path, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow([str(formatted_now_central)])
         logger.info(f'Button pressed at {formatted_now_central}')
+        #signal the user that we have recorded the button press
+        flash_led(3,.2,.2)
 
 # Attach the functions to the button press events
 p_button.when_pressed = lambda: log_datetime('P')
 m_button.when_pressed = lambda: log_datetime('M')
-
-# def on_message(client, userdata, msg):
-    # logger.info(msg.topic+" "+str(msg.payload))
-    # # Emit message to all connected clients
-    # socketio.emit('update_listbox', {'data': msg.payload.decode()})
 
 
 # ============== routes ===============
@@ -105,14 +112,7 @@ def delete_data():
     except FileNotFoundError:
         app.logger.warning('could not delete csv data')
         return jsonify({"error": "No data found to delete"}), 404
-        
-# # Initialize MQTT client
-# client = mqtt.Client()
-# #client.on_connect = on_connect
-# client.on_message = on_message
-# client.connect(broker_address, broker_port)
-# # Start the MQTT client in a background thread
-# client.loop_start()
+
 
 #Function to run Flask app in a separate thread
 def run_server():

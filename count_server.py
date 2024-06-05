@@ -61,9 +61,9 @@ def log_datetime(btn_id):
     now_central = now_utc.astimezone(central)
     
     # Format the datetime object to the desired format
-    formatted_now_central = now_central.strftime("%d-%m-%Y - %H%M " + btn_id)
-    
-    print("debug - " + str(formatted_now_central))
+    formatted_now_central = now_central.strftime("%d-%m-%Y,%H%M," + btn_id)
+        
+    logger.info("formated line: " + str(formatted_now_central))
     
     with open(csv_file_path, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
@@ -116,7 +116,7 @@ def delete_data():
 
 #Function to run Flask app in a separate thread
 def run_server():
-    app.run(host='10.211.1.98', port=5555, debug=False)
+    app.run(host='0.0.0.0', port=5555, debug=False)
 
 # Start the Flask server in a separate thread
 threading.Thread(target=run_server).start()
@@ -125,3 +125,4 @@ threading.Thread(target=run_server).start()
 print("Waiting for button press...")
 p_button.wait_for_press()
 m_button.wait_for_press()
+

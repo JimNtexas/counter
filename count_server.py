@@ -43,10 +43,10 @@ flash_led(5,.2,.2)
 # CSV file path
 csv_file_path = 'button_press_log.csv'
 
-# Function to log date and time in Central time
+## Function to log date and time in Central time
 def log_datetime(btn_id):
     
-#    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     logger.info("datetime " + btn_id)
      
      
@@ -61,21 +61,20 @@ def log_datetime(btn_id):
     now_central = now_utc.astimezone(central)
     
     # Format the datetime object to the desired format
-    formatted_now_central = now_central.strftime("%d-%m-%Y,%H%M," + btn_id)
-        
-    logger.info("formated line: " + str(formatted_now_central))
+    day = now_central.strftime("%d-%m-%Y")
+    hour = now_central.strftime("%H%M")
+    data =[day,hour,btn_id]
     
     with open(csv_file_path, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerow([str(formatted_now_central)])
-        logger.info(f'Button pressed at {formatted_now_central}')
-        #signal the user that we have recorded the button press
-        flash_led(3,.2,.2)
+        csvwriter.writerow(data)
+        
+#signal the user that we have recorded the button press
+flash_led(3,.2,.2)
 
 # Attach the functions to the button press events
 p_button.when_pressed = lambda: log_datetime('P')
 m_button.when_pressed = lambda: log_datetime('M')
-
 
 # ============== routes ===============
 
@@ -87,16 +86,18 @@ def index():
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    data = []
+    output = [] 
     try:
-        with open(csv_file_path, 'r') as csvfile:
+        with open(csv_file_path,'r') as csvfile:
             csvreader = csv.reader(csvfile)
             for row in csvreader:
-                if row:  # Skip empty rows
-                    data.append({"timestamp": row[0]})
+                if(row):
+                    output.append({"timestamp": row})  #TODO; Fix format
+            
     except FileNotFoundError:
         return jsonify({"error": "No data found"}), 404
-    return jsonify(data)
+    logger.info(jsonify(output))
+    return jsonify(output)
 
 # Route to download the raw CSV file
 @app.route('/download', methods=['GET'])

@@ -63,7 +63,7 @@ def log_datetime(btn_id):
     logger.info("now central: " + now_central.strftime('%d %b %Y %H%M'))
     
     # Format the datetime object to the desired format
-    day = now_central.strftime("%d-%m-%Y")
+    day = now_central.strftime("%d-%b-%Y")
     hour = now_central.strftime("%H%M")
     data =[day,hour,btn_id]
     

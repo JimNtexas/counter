@@ -29,9 +29,10 @@ def flash_led(times, on_time=0.5, off_time=0.5):
         led.off()
         sleep(off_time)
 
-# Set up the buttons on GPIO pinS 26 and 19
-p_button = Button(26,bounce_time = 0.1)  #press after pee
+# Set up the buttons on GPIO pins 19,20,and 26
 m_button = Button(19,bounce_time = 0.1)  #press after medication
+b_button = Button(20,bounce_time = 0.1)  #press getting in or out of bed
+p_button = Button(26,bounce_time = 0.1)  #press after pee
 
 # Set up the LED on GPIO pin 5
 led = LED(5)
@@ -59,7 +60,7 @@ def log_datetime(btn_id):
     
     # Convert the current UTC time to Central Time
     now_central = now_utc.astimezone(central)
-    logger.info("now central: " + now_central.)
+    logger.info("now central: " + now_central.strftime('%d %b %Y %H%M'))
     
     # Format the datetime object to the desired format
     day = now_central.strftime("%d-%m-%Y")
@@ -76,6 +77,7 @@ def log_datetime(btn_id):
 # Attach the functions to the button press events
 p_button.when_pressed = lambda: log_datetime('P')
 m_button.when_pressed = lambda: log_datetime('M')
+b_button.when_pressed = lambda: log_datetime('B')
 
 # ============== routes ===============
 

@@ -49,17 +49,21 @@ def log_datetime(btn_id):
     logging.basicConfig(level=logging.DEBUG)
     logger.info("datetime " + btn_id)
      
-    #Get the timezone for Central Time
-    central_tz = pytz.timezone('America/Chicago')
-
-    now_central = datetime.now(central_tz)
-    #s = now_central.strftime("%d-%b-%Y  %H%M")
-    #print("now_central: " + s)
+     
+    central = pytz.timezone('America/Chicago')
+    # Get the current time in UTC
+    now_utc = datetime.now(pytz.utc)
+    
+    # Get the timezone for Central Time
+    central = pytz.timezone('America/Chicago')
+    
+    # Convert the current UTC time to Central Time
+    now_central = now_utc.astimezone(central)
+    logger.info("now central: " + now_central.)
     
     # Format the datetime object to the desired format
-    day = now_central.strftime("%d-%b-%Y")
+    day = now_central.strftime("%d-%m-%Y")
     hour = now_central.strftime("%H%M")
-    logger.info("day: " + day + " hour: " + hour)
     data =[day,hour,btn_id]
     
     with open(csv_file_path, 'a', newline='') as csvfile:

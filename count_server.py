@@ -79,6 +79,8 @@ p_button.when_pressed = lambda: log_datetime('P')
 m_button.when_pressed = lambda: log_datetime('M')
 b_button.when_pressed = lambda: log_datetime('B')
 
+# Function to be executed upon script termination
+
 # ============== routes ===============
 
 @app.route('/')

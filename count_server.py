@@ -13,16 +13,15 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("counter_log")
 
-rev_file_path = "rev.txt"
-def read_rev(rev_file_path):
+bnum_file_path = "build_number.txt"
+def read_bnum(bnum_file_path):
     try:
-        
-        with open(rev_file_path,'r',encoding="utf-8") as f:
-            rev = f.readline()
-            logger.info("rev read: " + rev)
-            return rev
+        with open(bnum_file_path,'r',encoding="utf-8") as f:
+            bnum = f.readline()
+            logger.info("build_num: " + bnum)
+            return bnum
     except Exception:
-        logger.info("rev file not found in read_rev")
+        logger.info("build number file not found in read_bnum")
         return "0"
  
                     
@@ -92,14 +91,13 @@ p_button.when_pressed = lambda: log_datetime('P')
 m_button.when_pressed = lambda: log_datetime('M')
 b_button.when_pressed = lambda: log_datetime('B')
 
-# Function to be executed upon script termination
-
 # ============== routes ===============
 
 @app.route('/')
 def index():
-    rev = read_rev(rev_file_path)
-    return render_template("index.html", revision= rev)   
+    bnum = read_bnum(bnum_file_path)
+    logger.info("bnum passed to index: " + bnum)
+    return render_template("index.html", bnumber=bnum)   
     
 
 

@@ -13,6 +13,16 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("counter_log")
 
+bnum_file_path = "build_number.txt"
+def read_bnum(bnum_file_path):
+    try:
+        with open(bnum_file_path,'r',encoding="utf-8") as f:
+            bnum = f.readline()
+            return bnum
+    except Exception:
+        logger.info("build number file not found in read_bnum")
+        return "0"
+
 def flash_led(times, on_time=0.5, off_time=0.5):
     """
     Function to flash an LED a given number of times.
@@ -83,7 +93,10 @@ b_button.when_pressed = lambda: log_datetime('B')
 
 @app.route('/')
 def index():
-    return render_template("index.html")   
+    #pass build number
+    bnum = read_bnum(bnum_file_path)
+    logger.info("bnum passed to index: " + bnum)
+    return render_template("index.html", bnumber=bnum)    
     
 
 

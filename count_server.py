@@ -13,6 +13,20 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("counter_log")
 
+rev_file_path = "rev.txt"
+def read_rev(rev_file_path):
+    try:
+        
+        with open(rev_file_path,'r',encoding="utf-8") as f:
+            rev = f.readline()
+            logger.info("rev read: " + rev)
+            return rev
+    except Exception:
+        logger.info("rev file not found in read_rev")
+        return "0"
+ 
+                    
+    
 def flash_led(times, on_time=0.5, off_time=0.5):
     """
     Function to flash an LED a given number of times.
@@ -39,7 +53,6 @@ led = LED(5)
 
 #signal the user that we're about ready to go
 flash_led(5,.2,.2)
-
 
 # CSV file path
 csv_file_path = 'button_press_log.csv'
@@ -85,7 +98,8 @@ b_button.when_pressed = lambda: log_datetime('B')
 
 @app.route('/')
 def index():
-    return render_template("index.html")   
+    rev = read_rev(rev_file_path)
+    return render_template("index.html", revision= rev)   
     
 
 

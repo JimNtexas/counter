@@ -8,8 +8,9 @@ def increment_build_number(file_path):
     else:
         with open(file_path, 'r') as file:
             build_number = int(file.read().strip())
-
+        print("prior build: " + str(build_number))
         build_number += 1
+        print("new build: " + str(build_number))
 
         with open(file_path, 'w') as file:
             file.write(str(build_number))

@@ -15,7 +15,7 @@ logger = logging.getLogger("counter_log")
 
 bnum_file_path = "build_number.txt"
 # A git hook should increment build_number.txt before each commit
-# but this doesn't yet work :(
+# but this doesn't yet work :( :(
 def read_bnum(bnum_file_path):
     try:
         with open(bnum_file_path,'r',encoding="utf-8") as f:
